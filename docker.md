@@ -76,3 +76,5 @@
 8. docker container logs [containerID];
 9. docker container exec -it [containerID] /bin/bash // 进入一个正在运行的容器
 10. docker container cp [containerID]:[/path/to/file] // 从正在运行的 Docker 容器里，将文件拷贝到本地
+
+
