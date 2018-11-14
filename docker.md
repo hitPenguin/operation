@@ -13,6 +13,8 @@
 
 ##  image 文件 | 容器的模板
 
+* docker image 是虚拟文件系统，有自己的文件结构
+
 ```bash
   # 列出本机的所有 image 文件
   $ docker iamge ls
