@@ -24,6 +24,7 @@
   $ docker iamge pull library/hello-world
   # 运行 image 文件 | 本地没有会从远程抓起
   $ docker container run hello-world
+  app
 ```
 
 
