@@ -139,5 +139,20 @@
 ```
 * `/api/ticket/:owner/tickets`, `ticket.createTicket` | post
 ```js
-  
+  // param 中的 owner
+  // session 中的 username projectId
+  // body 中的 title description type status attachments
+  // attachments 形式 [{owner}, {url}]
+  // 存到 model/ticket 中
+```
+
+## Router/bill.js
+
+* `/api/pay/:method`, `bill.pay`
+```js
+  // alipay paypal 两种支付方式
+  // session 中的 userId username
+  // query 中的 amount
+  // 放入 model/pay 中
+  // 转向 alipau 或 paypal 的开放接口
 ```
