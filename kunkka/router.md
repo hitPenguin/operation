@@ -110,3 +110,34 @@
   // 2. 利用 passport 的 local 策略验证账号密码
   // 3. 验证成功转到 '/'
 ```
+
+## Router/ccap.js
+
+* `/api/captcha` | get
+```js
+  // 利用 ccap 生成 随机的 验证码
+```
+
+## Router/ticket.js
+
+* `/api/ticket/:owner/ticket/:ticketId/reply`, `ticket.createReply` | post
+```js
+  // 获取 param 中的 owner ticketId
+  // 获取 body 中的 content
+  // 获取 session 中的 username
+  // 获取 user.roles 中最高级的 role
+  // 把以上存在 model/reply 中
+```
+* `/api/ticket/:owner/ticket/:ticketId/reply/:replyId`, `ticket.updateReply` | put
+```js
+  // 根据 replyId 找到工单
+  // 更新工单的 content
+```
+* `/api/ticket/:owner/ticket/:ticketId/reply/:replyId`, `ticket.deleteReply` | delete
+```js
+  // 根据 replyId 删掉对应数据 
+```
+* `/api/ticket/:owner/tickets`, `ticket.createTicket` | post
+```js
+  
+```
