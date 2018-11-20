@@ -79,3 +79,34 @@
   // ${remote}/v3/projects/${projectId}/users/${userId}/roles/${roleId}
 ```
 * `/api/v1/services`, `admin.api.getServices` | get
+
+
+## Router/auth.js
+
+* `/logout` | get
+```js
+  // 1. user.provider === 'saml'
+  //      redirect('/passport/saml/logout')
+  // 2. 否则 
+  //      ctx.logout()   egg-passport 提供，清除用户session
+  //      redirect('/')
+```
+* `/auth/switch_project`, `auth.switchProject` | put
+```js
+  // 1. 先去找 config.keystone.url   pre4....:13000
+  // 2. 找 body 或 querystring 中的 projectId
+  // 3. 拿 token ，发 /v3/auth/tokens
+  // 4. 把 endpoint projectId scopedToken isAdmin
+  // 5. 更新 project 和 region
+```
+* `/auth/switch_region`, `auth.switchRegion` | put
+```js
+  // 拿出 session 中对应 userId 的 cookies
+  // 把 body 中的 regionId 
+```
+* `/passport/local` | post
+```js
+  // 1. 拿出 session 的验证码和 body 中的 captcha 进行对比
+  // 2. 利用 passport 的 local 策略验证账号密码
+  // 3. 验证成功转到 '/'
+```
