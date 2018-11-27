@@ -156,3 +156,16 @@
   // 放入 model/pay 中
   // 转向 alipau 或 paypal 的开放接口
 ```
+* `/api/pay/alipay/notify/:regionId`, `bill.alipayNotify` | post
+```js
+  // 取出 request.body.trade_status model.Pay 
+  // body 变成 querystring
+  // querystring + partnerKey 用 md5 进行加密
+  // 去数据库里找此条数据并 transferred = true 并保存
+```
+* `/api/pay/paypal/:result`, `bill.paypalExecute` | get
+```js
+  // 检测 params.result 是否为 'success'
+  // 拿出 mode.Pay 
+  // query 中的 PayerID paymentID token
+```
