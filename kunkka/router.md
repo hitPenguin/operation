@@ -92,7 +92,10 @@
   //      redirect('/')
 ```
 * `/auth/switch_project`, `auth.switchProject` | put
-```js
+```js# node 调试 | 工具篇
+
+## Source Map
+
   // 1. 先去找 config.keystone.url   pre4....:13000
   // 2. 找 body 或 querystring 中的 projectId
   // 3. 拿 token ，发 /v3/auth/tokens
@@ -168,4 +171,8 @@
   // 检测 params.result 是否为 'success'
   // 拿出 mode.Pay 
   // query 中的 PayerID paymentID token
+  // 把 paymenID 放到相关 model.Pay 中
+  // 开始付款，若成功，结果放在 model.Pay
+  // 未成功则延迟支付直到 state == 'approved'
+  // 存数据库，发 /v1/accounts
 ```
