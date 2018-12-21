@@ -3,9 +3,10 @@
 ## JSX 
 
 * 凡是使用 JSX 语法的时候，都要在 javascript 写上 `type="text/babel"`
+* JSX 语法需要经过 babel 转码
 
 ```js
-  <javascript type="text/babel">
+  <script type="text/babel"></script>
 ```
 
 ## 相关文件
@@ -18,6 +19,7 @@
   # JSX 转为 javascript
   # 将 src 的 js 文件转码后放在 build 目录
   $ babel src --out-dir build
+  $ babel src -d build
 ```
 
 ## ReactDOM.render() | React 最基本方法
@@ -41,7 +43,7 @@
     <div>
     {
       names.map(function (name, index) {
-        return <div key={index}>Hello, {name}!</div>
+        return <div>Hello, {name}!</div>
       })
     }
     </div>,
@@ -49,7 +51,7 @@
   );
 ```
 
-* JSX 允许在模板插入 Javascript 变量 | 若是数组，则会展开数组
+* JSX 允许在模板插入 Javascript 变量 | 若是数组，则会展开数组, 不能插入对象
 
 ```js
   // react 写法
@@ -68,7 +70,7 @@
 * `React.createClass` | 将代码封装为组件
 * 每个组件都有自己的 `render` 方法
 * 组件`第一个`字母必须`大写` | 只能包含`一个顶层标签`
-* 组件类的属性可以在 `this.pros` 对象上获取 | `class` 要写成 `className` | `for` 属性要写成 `htmlFor`
+* 组件类的属性可以在 `this.props` 对象上获取 | `class` 要写成 `className` | `for` 属性要写成 `htmlFor`
 
 ```js
   var HelloMessage = React.createClass({
@@ -120,6 +122,8 @@ ReactDOM.render(
 * `设置属性默认值` | 组件类的`getDefaultProps`属性
 
 ```js
+  // <MyTitle /> getDefaultProps 可以设置默认参数
+  // <MyTitle title={data}/> getDefaultProps 就没作用了
   var myTitle = React.createClass({
     propType: {
       title : React.propTypes.string.isRequired
@@ -138,6 +142,7 @@ ReactDOM.render(
 ## 获取真实的 DOM 节点 | DOM diff 节点
 
 * `this.refs.[refName]` | 获取真实的 DOM 节点
+* 节点需要添加 ref 属性
 
 ```js
   // this.refs 要等虚拟 DOM 插入文档后使用
@@ -190,6 +195,12 @@ ReactDOM.render(
 ## 表单 | 用户的输入不能通过 this.props 获取
 
 * 表单组件的值一般通过事件的 `event.target.value` 获取 | input textarea select radio
+* 类似 vue 的 双向数据绑定 需要利用 this.state
+```
+  1. 数据的获取从 event.target.value 中获取
+  2. 数据的输出从 this.setStat({ }) 设置
+  3. 数据的实时绑定可以考虑 onchange 事件
+```
 
 ```js
   var Input = React.createClass({
@@ -221,13 +232,13 @@ ReactDOM.render(
 
 ```js
   // will and did
-  componentWillMount();
-  componentDidMount();
-  componentWillUpdate(object nextProps, object nextState);
-  componentDidUpdate(object prevProps, object prevState);
-  conponentWillUnmount();
+  componentWillMount(); // 初始渲染前触发一次
+  componentDidMount(); // 初始渲染后触发一次
+  componentWillUpdate(object nextProps, object nextState); // 更新前触发
+  componentDidUpdate(object prevProps, object prevState); // 更新后触发
+  conponentWillUnmount(); // 组件卸载前触发
   // 两种特殊状态的处理函数
-  componentWillReceiveProps(object nextProps) // 已加载组件收到新的参数时调用
+  componentWillReceiveProps(object nextProps) // 已加载组件收到新的props时调用
   shouldComponentUpdate(object nextProps, object nextState) // 组件判断是否重新渲染时调用
 ```
 
@@ -268,12 +279,113 @@ ReactDOM.render(
 ## Ajax
 
 * 可以使用 componentDidMount 方法设置 Ajax 请求，成功后用 this.setState 方法重新渲染 UI
+```jsx
+  // <script type="text/babel">
+    var UserGist = React.createClass({
+      getInitialState: function() {
+        return {
+          username: '',
+          lastGistUrl: ''
+        };
+      },
+      componentDidMount: function() {
+        $.get(this.props.source, function(result) {
+          var lastGist = result[0];
+          this.setState({
+            username: lastGist.owner.login,
+            lastGistUrl: lastGist.url
+          });
+        }.bind(this));
+      },
+      render: function() {
+        return (
+          <div>
+            {this.state.username}'s last gist is <a href={this.state.lastGistUrl}>here</a>.
+          </div>
+        );
+      }
+    });
+    ReactDOM.render(
+      <UserGist source="https://api.github.com/users/octocat/gists" />,
+      document.getElementById('example')
+    );
+  // </script>
+```
 
 ## 传入的 props 也可以是 promise 对象
 
 ```js
+  var RepoList = React.createClass({
+    getInitialState: function() {
+      return {
+        loading: true,
+        error: null,
+        data: null
+      };
+    },
+
+    componentDidMount() {                     // 传入的 promise 参数可以用 promise.then 来实现异步加载
+      this.props.promise.then(
+        value => this.setState({loading: false, data: value}),
+        error => this.setState({loading: false, error: error}));
+    },
+
+    render: function() {
+      if (this.state.loading) {
+        return <span>Loading...</span>;
+      }
+      else if (this.state.error !== null) {
+        return <span>Error: {this.state.error.message}</span>;
+      }
+      else {
+        var repos = this.state.data.items;
+        var repoList = repos.map(function (repo, index) {
+          return (
+            <li><a href={repo.html_url}>{repo.name}</a> ({repo.stargazers_count} stars) <br/> {repo.description}</li>
+          );
+        });
+        return (
+          <main>
+            <h1>Most Popular JavaScript Projects in Github</h1>
+            <ol>{repoList}</ol>
+          </main>
+        );
+      }
+    }
+});
   ReactDOM.render(
-  <RepoList promise={$.getJSON('https://api.github.com/search/repositories?q=javascript&sort=stars')} />,
-  document.getElementById('example')
-);
+    <RepoList promise={$.getJSON('https://api.github.com/search/repositories?q=javascript&sort=stars')} />,
+    document.getElementById('example')
+  );
+```
+
+## 服务器渲染
+
+
+## 组件的引入方式
+
+```jsx
+  // app.jsx
+  import React from 'react';
+  require('./App.css');
+  export default class App extends React.Component {
+    constructor(props) {
+      super(props);
+    }
+
+    render() {
+      return (
+        <h1>Hello World</h1>
+      );
+    }
+  }
+  // main.jsx
+  import React from 'react';
+  import ReactDOM from 'react-dom';
+  import App from './components/App';
+
+  ReactDOM.render(
+    <App />,
+    document.body.appendChild(document.createElement('div'))
+  );
 ```

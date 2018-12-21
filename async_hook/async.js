@@ -1,22 +1,38 @@
-const asyncHook = require('async_hooks');
 const fs = require('fs');
+const async_hooks = require('async_hooks');
 
-const hook = asyncHook.createHook({
+async_hooks.createHook({
   init(asyncId, type, triggerAsyncId, resource) {
-    fs.writeSync(1, `${type}\n`);
+    fs.writeSync(1, `${type}(${asyncId}): trigger: ${triggerAsyncId}\n`);
+  },
+  destroy(asyncId) {
+    fs.writeSync(1, `destory: ${asyncId}\n`);
   }
-});
+}).enable();
 
-hook.enable();
-
-let index = 0;
-
-function test() {
-  index ++;
-  fs.writeSync(1, `${asyncHook.triggerAsyncId()}\n`);
+async function A() {
+  fs.writeSync(1, `A -> ${async_hooks.executionAsyncId()}\n`); // 2
+  setTimeout(() => {
+    fs.write(1, `A in setTimeout -> ${async_hooks.executionAsyncId()}\n`); // 3
+    B();
+  });
 }
 
-test();
+async function B() {
+  fs.writeSync(1, `B -> ${async_hooks.executionAsyncId()}\n`); // 4
+  process.nextTick(() => {
+    fs.writeSync(1, `B in process.nextTick -> ${async_hooks.executionAsyncId()}\n`); // 5
+    C();
+    C();
+  })
+}
 
-// process.nextTick(() => test());
-// setTimeout(() => test(), 0);
+async function C() {
+  fs.writeSync(1, `C -> ${async_hooks.executionAsyncId()}\n`); // 6 7
+  Promise.resolve().then(() => {
+    fs.writeSync(1, `C in promise.then -> ${async_hooks.executionAsyncId()}\n`); // 8 9
+  })
+}
+
+fs.writeSync(1, `top level -> ${async_hooks.executionAsyncId()}\n`); // 1
+A();

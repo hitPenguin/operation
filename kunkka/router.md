@@ -155,9 +155,20 @@
 ```js
   // alipay paypal 两种支付方式
   // session 中的 userId username
-  // query 中的 amount
-  // 放入 model/pay 中
+  // query 中的 amount 充值数额
+  // 放入 model/pay 中 {
+  //    user: userId,
+  //    username: username,
+  //    method: alipay / paypal
+  //    amount: 数额
+  //    currency: 'CNY'
+  // }
   // 转向 alipau 或 paypal 的开放接口
+  //  1. alipay.create()
+  //    向 https://mapi.alipay.com/gateway.do? 加查询字符串 
+  //    添加 notify_url: /api/pay/alipay/notify/:regionId
+  //  2. paypal.create()
+  //    类似以上。
 ```
 * `/api/pay/alipay/notify/:regionId`, `bill.alipayNotify` | post
 ```js
@@ -175,4 +186,11 @@
   // 开始付款，若成功，结果放在 model.Pay
   // 未成功则延迟支付直到 state == 'approved'
   // 存数据库，发 /v1/accounts
+```
+
+## Router/dashboard.js
+
+* `/api/v1/:projectId/overview`, `dashboard.api.getOverview` | get
+```js
+  
 ```

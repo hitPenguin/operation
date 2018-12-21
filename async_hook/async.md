@@ -33,7 +33,7 @@
 ## async scope | async Id
 
 * `asyncHooks.executionAsyncId()` | 返回当前执行上下文的 Async Id
-* `asyncHooks.triggerAsyncId()`
+* `asyncHooks.triggerAsyncId()` | 返回当前函数调用者的 asyncId
 
 ## AsyncResource 类
 
