@@ -19,7 +19,7 @@
 
 * `hashHistory` | react-router 2.0 | /app ---> localhost:8080/#/app
 
-```js
+```jsx
   // index.js 文件
   import { Router, Route, hashHistory } from 'react-router'
   import { APP } from './app'
@@ -31,7 +31,7 @@
   ), document.getElementById('app'));
 ```
 
-```js
+```jsx
   // app.js
   import React from 'react'
   export default React.createClass({
@@ -45,7 +45,7 @@
 
 * index.js 文件的写法
 
-```js
+```jsx
   // 用户访问 /repos 时，先加载App组件，在内部加载 Repos 组件
   <Router history={hashHistory}>
     <Route path="/" component={APP} />
@@ -57,7 +57,7 @@
 
 * app 组件的写法
 
-```js
+```jsx
   export default React.createClass({
     render() {
       return (
@@ -71,7 +71,7 @@
 
 * 子路由可以单独传入 Router 组件的 routes 属性
 
-```js
+```jsx
   let routes = <Route path="/" component={APP}>
                 <Route path="/repos" component={Repos} />
                 <Route path="/about" component={About} />
